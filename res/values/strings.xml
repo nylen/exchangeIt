@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="hello">Hello World, exchangeIt</string>
+	<string name="app_name">exchangeIt</string>
+	<string name="no_email">Inbox is empty!</string>
+	<string name="message_view_to_label">To:</string>
+	<string name="exchangeBaseUrl">exchangeBaseUrl</string>
+	<string name="exchangeContextPath">exchangeContextPath</string>
+	<string name="exchangeMailboxName">exchangeMailboxName</string>
+	<string name="exchangeUsername">exchangeUsername</string>
+	<string name="exchangePassword">exchangePassword</string>
+</resources>

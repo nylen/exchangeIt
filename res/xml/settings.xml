@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+	<PreferenceCategory android:title="Exchange Server Settings">
+		<EditTextPreference android:key="exchangeBaseUrl"
+			android:title="Exchange OWA URL" android:summary="Click to edit"
+			android:dialogTitle="Enter the URL for your exchange server"></EditTextPreference>
+		<EditTextPreference android:key="exchangeContextPath"
+			android:title="Exchange Context Path" android:summary="Click to edit"
+			android:dialogTitle="Enter the context path (usually exchange)"></EditTextPreference>
+		<EditTextPreference android:key="exchangeMailboxName"
+			android:title="Exchange Mailbox Name" android:summary="Click to edit"
+			android:dialogTitle="Enter the your mailbox name"></EditTextPreference>
+		<EditTextPreference android:key="exchangeUsername"
+			android:title="Exchange Username" android:summary="Click to edit"
+			android:dialogTitle="Enter your Username"></EditTextPreference>
+		<EditTextPreference android:key="exchangePassword"
+			android:title="Exchange Password" android:summary="Click to edit"
+			android:dialogTitle="Enter your Password"></EditTextPreference>
+	</PreferenceCategory>
+</PreferenceScreen>
