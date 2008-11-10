@@ -20,7 +20,7 @@ public class GetInboxContentsTest {
 			SAXException {
 		GetInboxContents subject = new GetInboxContents(
 				"https://mail.cedarcrestone.com/exchange",
-				"Brian.Yarger@cedarcrestone.com", "brian.yarger", "!!urdead1");
+				"Brian.Yarger@cedarcrestone.com", "brian.yarger", "abc123");
 		ExchangeMessage[] list = subject.getMessages();
 		assertNotNull("list is null", list);
 		assertTrue("list is empty", list.length > 0);
@@ -33,7 +33,7 @@ public class GetInboxContentsTest {
 			SAXException, MessagingException {
 		GetInboxContents subject = new GetInboxContents(
 				"https://mail.cedarcrestone.com/exchange",
-				"Brian.Yarger@cedarcrestone.com", "brian.yarger", "!!urdead1");
+				"Brian.Yarger@cedarcrestone.com", "brian.yarger", "abc123");
 		ExchangeMessage[] list = subject.getMessages();
 		assertNotNull("list is null", list);
 		assertTrue("list is empty", list.length > 0);
