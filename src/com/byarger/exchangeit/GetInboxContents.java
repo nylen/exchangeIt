@@ -61,7 +61,7 @@ public class GetInboxContents extends WebDavBase {
 
 		HttpResponse response = client.execute(request);
 		if (response.getStatusLine().getStatusCode() >= 300) {
-			throw new RuntimeException("Error logging in");
+			return new ExchangeMessage[] {};
 		}
 
 		InputStream is = response.getEntity().getContent();
