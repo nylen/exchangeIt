@@ -31,9 +31,9 @@ public class GetInboxContents extends WebDavBase {
 
 	private static final String PATH = "Inbox";
 
-	public GetInboxContents(String url, String mailboxName, String username,
-			String password) {
-		super(url, mailboxName, PATH, username, password);
+	public GetInboxContents(String url, String contextPath, String mailboxName,
+			String username, String password) {
+		super(url, contextPath, mailboxName, PATH, username, password);
 	}
 
 	public ExchangeMessage[] getMessages() throws IOException,
@@ -49,12 +49,12 @@ public class GetInboxContents extends WebDavBase {
 		String url = getFullUrl();
 
 		client.getCredentialsProvider().setCredentials(AuthScope.ANY,
-				new UsernamePasswordCredentials("brian.yarger", "!!urdead1"));
+				new UsernamePasswordCredentials(getUsername(), getPassword()));
 
 		MessageSearch request = new MessageSearch(url);
 		request.setHeader("Depth", "0");
-		String content = request.generateRequestBody("/exchange/"
-				+ getMailboxName() + "/" + getPath());
+		String content = request.generateRequestBody("/" + getContextPath()
+				+ "/" + getMailboxName() + "/" + getPath());
 		StringEntity entity = new StringEntity(content);
 		entity.setContentType("text/xml;");
 		request.setEntity(entity);

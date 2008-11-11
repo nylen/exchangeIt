@@ -19,7 +19,7 @@ public class GetInboxContentsTest {
 	public void getContents() throws IOException, ParserConfigurationException,
 			SAXException {
 		GetInboxContents subject = new GetInboxContents(
-				"https://mail.cedarcrestone.com/exchange",
+				"https://mail.cedarcrestone.com", "exchange",
 				"Brian.Yarger@cedarcrestone.com", "brian.yarger", "abc123");
 		ExchangeMessage[] list = subject.getMessages();
 		assertNotNull("list is null", list);
@@ -32,7 +32,7 @@ public class GetInboxContentsTest {
 	public void getMessage() throws IOException, ParserConfigurationException,
 			SAXException, MessagingException {
 		GetInboxContents subject = new GetInboxContents(
-				"https://mail.cedarcrestone.com/exchange",
+				"https://mail.cedarcrestone.com", "exchange",
 				"Brian.Yarger@cedarcrestone.com", "brian.yarger", "abc123");
 		ExchangeMessage[] list = subject.getMessages();
 		assertNotNull("list is null", list);
@@ -41,7 +41,7 @@ public class GetInboxContentsTest {
 		assertTrue("href is empty", list[0].getHref().length() > 0);
 
 		GetMessage msg = new GetMessage(list[0].getHref(), "brian.yarger",
-				"!!urdead1");
+				"abc123");
 		MimeMessage contents = msg.getMessageContents();
 		assertNotNull("list is null", contents);
 	}

@@ -90,12 +90,9 @@ public class InboxList extends ListActivity {
 
 						if (Config.LOGV)
 							Log.v(TAG, "get inbox contents");
-						StringBuilder sb = new StringBuilder();
-						sb.append(baseURL);
-						sb.append("/");
-						sb.append(contextPath);
 						GetInboxContents getInboxContents = new GetInboxContents(
-								sb.toString(), mailboxName, username, password);
+								baseURL, contextPath, mailboxName, username,
+								password);
 
 						ExchangeMessage[] inbox = getInboxContents
 								.getMessages();
