@@ -4,8 +4,10 @@ import java.io.IOException;
 import java.text.DateFormat;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
@@ -44,6 +46,8 @@ public class MessageView extends Activity {
 	private DateFormat mTimeFormat = DateFormat
 			.getTimeInstance(DateFormat.SHORT);
 
+	private String errorMessage;
+
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -80,6 +84,23 @@ public class MessageView extends Activity {
 				dismissDialog(DIALOG1_KEY);
 			}
 		};
+
+		final Runnable showAlertDialog = new Runnable() {
+			public void run() {
+				if (errorMessage != null && errorMessage.length() > 0) {
+					if (Config.LOGV)
+						Log.v(TAG, errorMessage);
+					new AlertDialog.Builder(MessageView.this).setMessage(
+							errorMessage).setPositiveButton("OK",
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int whichButton) {
+								}
+							}).show();
+				}
+			}
+		};
+
 		new Thread(new Runnable() {
 			public void run() {
 				try {
@@ -95,10 +116,8 @@ public class MessageView extends Activity {
 							InboxList.EXCHANGE_PASSWORD, "");
 
 					if (username.length() > 0 && password.length() > 0) {
-						if (Config.LOGV)
-							Log
-									.v(TAG,
-											"some preferences not set, skipping operation");
+						errorMessage = "Settings are not complete";
+						handler.post(showAlertDialog);
 						return;
 					}
 
@@ -106,12 +125,14 @@ public class MessageView extends Activity {
 							password);
 
 					message = getMessage.getMessageContents();
+
 				} catch (IOException e) {
-					Log.e(TAG, e.getMessage());
-					e.printStackTrace();
+					errorMessage = "Caught IO Exception: " + e.getMessage();
+					handler.post(showAlertDialog);
 				} catch (MessagingException e) {
-					Log.e(TAG, e.getMessage());
-					e.printStackTrace();
+					errorMessage = "Caught Messaging Exception: "
+							+ e.getMessage();
+					handler.post(showAlertDialog);
 				}
 				if (Config.LOGV)
 					Log.v(TAG, "update UI");
@@ -137,43 +158,51 @@ public class MessageView extends Activity {
 
 	private void onMessageAvaiable() {
 		try {
+			if (message != null) {
+				String subjectText = message.getSubject();
+				String fromText = Address.toFriendly(message.getFrom());
+				String dateText = Utility.isDateToday(message.getSentDate()) ? mTimeFormat
+						.format(message.getSentDate())
+						: mDateTimeFormat.format(message.getSentDate());
+				String toText = Address.toFriendly(message
+						.getRecipients(RecipientType.TO));
+				mSubjectView.setText(subjectText);
+				mDateView.setText(dateText);
+				mToView.setText(toText);
+				mFromView.setText(fromText);
 
-			String subjectText = message.getSubject();
-			String fromText = Address.toFriendly(message.getFrom());
-			String dateText = Utility.isDateToday(message.getSentDate()) ? mTimeFormat
-					.format(message.getSentDate())
-					: mDateTimeFormat.format(message.getSentDate());
-			String toText = Address.toFriendly(message
-					.getRecipients(RecipientType.TO));
-			mSubjectView.setText(subjectText);
-			mDateView.setText(dateText);
-			mToView.setText(toText);
-			mFromView.setText(fromText);
-
-			Part part = MimeUtility.findFirstPartByMimeType(message,
-					"text/html");
-			if (part == null) {
-				part = MimeUtility.findFirstPartByMimeType(message,
-						"text/plain");
-			}
-			if (part != null) {
-				String text = MimeUtility.getTextFromPart(part);
-				if (part.getMimeType().equalsIgnoreCase("text/html")) {
-					text = text.replaceAll("cid:", "http://cid/");
-				} else {
-					text = text.toString().replaceAll("\r?\n", "<br>");
-					text = "<html><body>" + text + "</body></html>";
+				Part part = MimeUtility.findFirstPartByMimeType(message,
+						"text/html");
+				if (part == null) {
+					part = MimeUtility.findFirstPartByMimeType(message,
+							"text/plain");
 				}
+				if (part != null) {
+					String text = MimeUtility.getTextFromPart(part);
+					if (part.getMimeType().equalsIgnoreCase("text/html")) {
+						text = text.replaceAll("cid:", "http://cid/");
+					} else {
+						text = text.toString().replaceAll("\r?\n", "<br>");
+						text = "<html><body>" + text + "</body></html>";
+					}
 
-				mMessageContentView.loadDataWithBaseURL("email://", text,
-						"text/html", "utf-8", null);
-			} else {
-				mMessageContentView.loadUrl("file:///android_asset/empty.html");
+					mMessageContentView.loadDataWithBaseURL("email://", text,
+							"text/html", "utf-8", null);
+				} else {
+					mMessageContentView
+							.loadUrl("file:///android_asset/empty.html");
+				}
 			}
 		} catch (Exception e) {
-			if (Config.LOGV) {
-				Log.v("Email", "loadMessageForViewBodyAvailable", e);
-			}
+			if (Config.LOGV)
+				Log.v(TAG, e.getMessage());
+			new AlertDialog.Builder(MessageView.this)
+					.setMessage(e.getMessage()).setPositiveButton("OK",
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int whichButton) {
+								}
+							}).show();
 		}
 	}
 }

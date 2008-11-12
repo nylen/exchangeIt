@@ -33,7 +33,7 @@ public class GetMessage extends WebDavBase {
 
 		HttpResponse response = client.execute(request);
 		if (response.getStatusLine().getStatusCode() >= 300) {
-			throw new RuntimeException("Error logging in");
+			return null;
 		}
 		MimeMessage msg = new MimeMessage(response.getEntity().getContent());
 		return msg;

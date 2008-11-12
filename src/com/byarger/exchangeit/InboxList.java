@@ -6,9 +6,11 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -37,6 +39,8 @@ public class InboxList extends ListActivity {
 	public static final String EXCHANGE_USERNAME = "exchangeUsername";
 	public static final String EXCHANGE_PASSWORD = "exchangePassword";
 
+	private String errorMessage;
+
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -64,6 +68,22 @@ public class InboxList extends ListActivity {
 				if (Config.LOGV)
 					Log.v(TAG, "dismiss dialog");
 				dismissDialog(DIALOG1_KEY);
+			}
+		};
+
+		final Runnable showAlertDialog = new Runnable() {
+			public void run() {
+				if (errorMessage != null && errorMessage.length() > 0) {
+					if (Config.LOGV)
+						Log.v(TAG, errorMessage);
+					new AlertDialog.Builder(InboxList.this).setMessage(
+							errorMessage).setPositiveButton("OK",
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int whichButton) {
+								}
+							}).show();
+				}
 			}
 		};
 
@@ -101,21 +121,19 @@ public class InboxList extends ListActivity {
 						adapter = new ExchangeMessageAdapter(InboxList.this,
 								R.layout.email_row, inbox);
 					} else {
-						if (Config.LOGV)
-							Log.v(TAG, "settings not set completely");
+						errorMessage = "Settings are not complete";
+						handler.post(showAlertDialog);
 					}
 				} catch (IOException e) {
-					if (Config.LOGV)
-						Log.v(TAG, e.getMessage());
-					e.printStackTrace();
+					errorMessage = "Caught IO Exception: " + e.getMessage();
+					handler.post(showAlertDialog);
 				} catch (ParserConfigurationException e) {
-					if (Config.LOGV)
-						Log.v(TAG, e.getMessage());
-					e.printStackTrace();
+					errorMessage = "Caught ParserConfiguration Exception: "
+							+ e.getMessage();
+					handler.post(showAlertDialog);
 				} catch (SAXException e) {
-					if (Config.LOGV)
-						Log.v(TAG, e.getMessage());
-					e.printStackTrace();
+					errorMessage = "Caught SAX Exception: " + e.getMessage();
+					handler.post(showAlertDialog);
 				}
 
 				if (Config.LOGV)
