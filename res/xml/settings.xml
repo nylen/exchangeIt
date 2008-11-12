@@ -15,6 +15,6 @@
 			android:dialogTitle="Enter your Username"></EditTextPreference>
 		<EditTextPreference android:key="exchangePassword"
 			android:title="Exchange Password" android:summary="Click to edit"
-			android:dialogTitle="Enter your Password"></EditTextPreference>
+			android:password="true" android:dialogTitle="Enter your Password"></EditTextPreference>
 	</PreferenceCategory>
 </PreferenceScreen>

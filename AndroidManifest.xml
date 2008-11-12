@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="com.byarger.exchangeit"
       android:versionCode="1"
-      android:versionName="1.0.0">
+      android:versionName="0.5.0">
     <application android:label="@string/app_name" android:debuggable="true" android:icon="@drawable/send_48">
         <activity android:name="com.byarger.exchangeit.InboxList"
                   android:label="@string/app_name">
