@@ -11,8 +11,8 @@
 			android:dialogTitle="Enter the context path (usually exchange)"></EditTextPreference>
 		<EditTextPreference android:key="exchangeMailboxName"
 			android:title="Exchange Mailbox Name"
-			android:summary="This is your mailboxname, usually contains your username and somtimes your hostname - like Brian.Yarger@company.com"
-			android:dialogTitle="Enter your mailbox name, eg Brian.Yarger@company.com"></EditTextPreference>
+			android:summary="This is the next part of the URL like first.last@company.com"
+			android:dialogTitle="Enter your mailbox name, first.last@company.com"></EditTextPreference>
 		<EditTextPreference android:key="exchangeUsername"
 			android:title="Exchange Username" android:summary="Your OWA username"
 			android:dialogTitle="Enter your Username"></EditTextPreference>
