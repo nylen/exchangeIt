@@ -33,9 +33,7 @@ public class InboxList extends ListActivity {
 
 	private ExchangeMessageAdapter adapter;
 
-	public static final String EXCHANGE_BASE_URL = "exchangeBaseUrl";
-	public static final String EXCHANGE_CONTEXT_PATH = "exchangeContextPath";
-	public static final String EXCHANGE_MAILBOX_NAME = "exchangeMailboxName";
+	public static final String EXCHANGE_BASE_URL = "exchangeInboxUrl";
 	public static final String EXCHANGE_USERNAME = "exchangeUsername";
 	public static final String EXCHANGE_PASSWORD = "exchangePassword";
 
@@ -96,23 +94,17 @@ public class InboxList extends ListActivity {
 					SharedPreferences prefs = PreferenceManager
 							.getDefaultSharedPreferences(InboxList.this);
 
-					String baseURL = prefs.getString(EXCHANGE_BASE_URL, "");
-					String contextPath = prefs.getString(EXCHANGE_CONTEXT_PATH,
-							"exchange");
-					String mailboxName = prefs.getString(EXCHANGE_MAILBOX_NAME,
-							"");
+					String url = prefs.getString(EXCHANGE_BASE_URL, "");
 					String username = prefs.getString(EXCHANGE_USERNAME, "");
 					String password = prefs.getString(EXCHANGE_PASSWORD, "");
 
-					if (baseURL.length() > 0 && contextPath.length() > 0
-							&& mailboxName.length() > 0
-							&& username.length() > 0 && password.length() > 0) {
+					if (url.length() > 0 && username.length() > 0
+							&& password.length() > 0) {
 
 						if (Config.LOGV)
 							Log.v(TAG, "get inbox contents");
 						GetInboxContents getInboxContents = new GetInboxContents(
-								baseURL, contextPath, mailboxName, username,
-								password);
+								url, username, password);
 
 						ExchangeMessage[] inbox = getInboxContents
 								.getMessages();

@@ -16,7 +16,7 @@ import com.android.email.mail.internet.MimeMessage;
 public class GetMessage extends WebDavBase {
 
 	public GetMessage(String path, String username, String password) {
-		super("", "", "", path, username, password);
+		super(path, username, password);
 	}
 
 	public MimeMessage getMessageContents() throws MessagingException,
@@ -28,9 +28,9 @@ public class GetMessage extends WebDavBase {
 		client.getCredentialsProvider().setCredentials(AuthScope.ANY,
 				new UsernamePasswordCredentials(getUsername(), getPassword()));
 
-		HttpGet request = new HttpGet(getPath());
+		HttpGet request = new HttpGet(getUrl());
 		request.setHeader("Translate", "f");
-
+		
 		HttpResponse response = client.execute(request);
 		if (response.getStatusLine().getStatusCode() >= 300) {
 			return null;

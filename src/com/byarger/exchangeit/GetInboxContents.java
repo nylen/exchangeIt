@@ -29,11 +29,8 @@ import org.xml.sax.SAXException;
 
 public class GetInboxContents extends WebDavBase {
 
-	private static final String PATH = "Inbox";
-
-	public GetInboxContents(String url, String contextPath, String mailboxName,
-			String username, String password) {
-		super(url, contextPath, mailboxName, PATH, username, password);
+	public GetInboxContents(String inboxURL, String username, String password) {
+		super(inboxURL, username, password);
 	}
 
 	public ExchangeMessage[] getMessages() throws IOException,
@@ -46,15 +43,24 @@ public class GetInboxContents extends WebDavBase {
 		DefaultHttpClient client = new DefaultHttpClient();
 		client.getParams().setBooleanParameter(
 				HttpProtocolParams.USE_EXPECT_CONTINUE, false);
-		String url = getFullUrl();
 
 		client.getCredentialsProvider().setCredentials(AuthScope.ANY,
 				new UsernamePasswordCredentials(getUsername(), getPassword()));
 
-		MessageSearch request = new MessageSearch(url);
+		MessageSearch request = new MessageSearch(getUrl());
 		request.setHeader("Depth", "0");
-		String content = request.generateRequestBody("/" + getContextPath()
-				+ "/" + getMailboxName() + "/" + getPath());
+
+		int idx = getUrl().indexOf("//");
+		if (idx == -1) {
+			return new ExchangeMessage[] {};
+		}
+		int nextIdx = getUrl().indexOf("/", idx + 2);
+		if (idx == -1) {
+			return new ExchangeMessage[] {};
+		}
+
+		String content = request.generateRequestBody(getUrl()
+				.substring(nextIdx));
 		StringEntity entity = new StringEntity(content);
 		entity.setContentType("text/xml;");
 		request.setEntity(entity);

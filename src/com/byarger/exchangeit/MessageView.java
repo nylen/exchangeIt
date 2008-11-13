@@ -115,7 +115,7 @@ public class MessageView extends Activity {
 					String password = prefs.getString(
 							InboxList.EXCHANGE_PASSWORD, "");
 
-					if (username.length() > 0 && password.length() > 0) {
+					if (username.length() == 0 || password.length() == 0) {
 						errorMessage = "Settings are not complete";
 						handler.post(showAlertDialog);
 						return;
@@ -159,13 +159,26 @@ public class MessageView extends Activity {
 	private void onMessageAvaiable() {
 		try {
 			if (message != null) {
-				String subjectText = message.getSubject();
-				String fromText = Address.toFriendly(message.getFrom());
-				String dateText = Utility.isDateToday(message.getSentDate()) ? mTimeFormat
-						.format(message.getSentDate())
-						: mDateTimeFormat.format(message.getSentDate());
-				String toText = Address.toFriendly(message
-						.getRecipients(RecipientType.TO));
+
+				String subjectText = "";
+				if (message.getSubject() != null)
+					subjectText = message.getSubject();
+				String fromText = "";
+				if (message.getFrom() != null)
+					fromText = Address.toFriendly(message.getFrom());
+
+				String dateText = "";
+				if (message.getSentDate() != null) {
+					dateText = Utility.isDateToday(message.getSentDate()) ? mTimeFormat
+							.format(message.getSentDate())
+							: mDateTimeFormat.format(message.getSentDate());
+				}
+
+				String toText = "";
+				if (message.getRecipients(RecipientType.TO) != null)
+					toText = Address.toFriendly(message
+							.getRecipients(RecipientType.TO));
+
 				mSubjectView.setText(subjectText);
 				mDateView.setText(dateText);
 				mToView.setText(toText);
