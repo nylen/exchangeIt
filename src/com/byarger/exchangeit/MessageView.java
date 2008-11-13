@@ -133,7 +133,12 @@ public class MessageView extends Activity {
 					errorMessage = "Caught Messaging Exception: "
 							+ e.getMessage();
 					handler.post(showAlertDialog);
+				} catch (RuntimeException e) {
+					errorMessage = "Caught unhandled RuntimeException: "
+							+ e.getMessage();
+					handler.post(showAlertDialog);
 				}
+
 				if (Config.LOGV)
 					Log.v(TAG, "update UI");
 				handler.post(runInUIThread);

@@ -50,4 +50,15 @@ public class GetInboxContentsTest {
 		assertNotNull("message is null", contents);
 	}
 
+	@Test
+	public void getSpecificMessage() throws Exception {
+		BinaryTempFileBody.setTempDirectory(new File(System
+				.getProperty("java.io.tmpdir")));
+		GetMessage msg = new GetMessage(
+				"https://mail.cedarcrestone.com/exchange/Brian.Yarger@cedarcrestone.com/Inbox/[svn%20commit]%20[15796]%20projects_xF8FF_external_xF8FF_cci_xF8FF_appeval_xF8FF_trunk.EML",
+				"brian.yarger", "abc123");
+		MimeMessage contents = msg.getMessageContents();
+		assertNotNull("message is null", contents);
+
+	}
 }

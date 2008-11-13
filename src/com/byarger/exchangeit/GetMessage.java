@@ -28,9 +28,16 @@ public class GetMessage extends WebDavBase {
 		client.getCredentialsProvider().setCredentials(AuthScope.ANY,
 				new UsernamePasswordCredentials(getUsername(), getPassword()));
 
-		HttpGet request = new HttpGet(getUrl());
+		String url = getUrl();
+		// Apparently OWA doesn't encode [] in it's href, although it does
+		// encode other unsafe chars
+		if (url.contains("["))
+			url = url.replace("[", "%5B");
+		if (url.contains("]"))
+			url = url.replace("]", "%5D");
+		HttpGet request = new HttpGet(url);
 		request.setHeader("Translate", "f");
-		
+
 		HttpResponse response = client.execute(request);
 		if (response.getStatusLine().getStatusCode() >= 300) {
 			return null;

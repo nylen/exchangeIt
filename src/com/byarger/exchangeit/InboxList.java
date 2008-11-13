@@ -126,6 +126,10 @@ public class InboxList extends ListActivity {
 				} catch (SAXException e) {
 					errorMessage = "Caught SAX Exception: " + e.getMessage();
 					handler.post(showAlertDialog);
+				} catch (RuntimeException e) {
+					errorMessage = "Caught unhandled RuntimeException: "
+							+ e.getMessage();
+					handler.post(showAlertDialog);
 				}
 
 				if (Config.LOGV)
