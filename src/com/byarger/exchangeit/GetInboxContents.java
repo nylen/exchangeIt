@@ -19,7 +19,6 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.HttpProtocolParams;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -33,41 +32,36 @@ public class GetInboxContents extends WebDavBase {
 		super(inboxURL, username, password);
 	}
 
-	public ExchangeMessage[] getMessages() throws IOException,
-			ParserConfigurationException, SAXException {
+	public ExchangeMessage[] getMessages(DefaultHttpClient client)
+			throws IOException, ParserConfigurationException, SAXException {
 		SimpleDateFormat sdf = new SimpleDateFormat(
 				"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = factory.newDocumentBuilder();
 
-		DefaultHttpClient client = new DefaultHttpClient();
-		client.getParams().setBooleanParameter(
-				HttpProtocolParams.USE_EXPECT_CONTINUE, false);
-
-		client.getCredentialsProvider().setCredentials(AuthScope.ANY,
-				new UsernamePasswordCredentials(getUsername(), getPassword()));
-
 		MessageSearch request = new MessageSearch(getUrl());
 		request.setHeader("Depth", "0");
 
-		int idx = getUrl().indexOf("//");
-		if (idx == -1) {
-			return new ExchangeMessage[] {};
-		}
-		int nextIdx = getUrl().indexOf("/", idx + 2);
-		if (idx == -1) {
-			return new ExchangeMessage[] {};
-		}
-
-		String content = request.generateRequestBody(getUrl()
-				.substring(nextIdx));
+		String content = request.generateRequestBody(getPathURI(getUrl()));
 		StringEntity entity = new StringEntity(content);
 		entity.setContentType("text/xml;");
 		request.setEntity(entity);
 
+		client.getCredentialsProvider().setCredentials(AuthScope.ANY,
+				new UsernamePasswordCredentials(getUsername(), getPassword()));
+
 		HttpResponse response = client.execute(request);
+
+		if (response.getStatusLine().getStatusCode() >= 400
+				&& response.getStatusLine().getStatusCode() < 500) {
+			if (!authenticate(client, getUrl(), getUsername(), getPassword())) {
+				throw new RuntimeException("Error authenticating to exchange");
+			}
+			response = client.execute(request);
+		}
 		if (response.getStatusLine().getStatusCode() >= 300) {
-			return new ExchangeMessage[] {};
+			throw new RuntimeException("Error - got back status code "
+					+ response.getStatusLine().getStatusCode());
 		}
 
 		InputStream is = response.getEntity().getContent();

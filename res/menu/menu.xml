@@ -20,5 +20,7 @@
 	<item android:id="@+id/settings" android:orderInCategory="1"
 		android:title="Settings" android:icon="@drawable/settings_48"/>
 
+	<item android:id="@+id/help" android:orderInCategory="2"
+		android:title="Help" android:icon="@drawable/help"/>
 
 </menu>

@@ -3,6 +3,9 @@ package com.byarger.exchangeit;
 import java.io.IOException;
 import java.text.DateFormat;
 
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.HttpProtocolParams;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -48,6 +51,8 @@ public class MessageView extends Activity {
 
 	private String errorMessage;
 
+	private DefaultHttpClient httpClient;
+
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -61,6 +66,10 @@ public class MessageView extends Activity {
 		if (Config.LOGV)
 			Log.v(TAG, "creating message view");
 		setContentView(R.layout.message_view);
+
+		httpClient = new DefaultHttpClient();
+		httpClient.getParams().setBooleanParameter(
+				HttpProtocolParams.USE_EXPECT_CONTINUE, false);
 
 		mMessageContentView = (WebView) findViewById(R.id.message_content);
 		mMessageContentView.setVerticalScrollBarEnabled(false);
@@ -124,7 +133,7 @@ public class MessageView extends Activity {
 					GetMessage getMessage = new GetMessage(href, username,
 							password);
 
-					message = getMessage.getMessageContents();
+					message = getMessage.getMessageContents(httpClient);
 
 				} catch (IOException e) {
 					errorMessage = "Caught IO Exception: " + e.getMessage();

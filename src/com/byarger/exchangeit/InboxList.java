@@ -4,6 +4,8 @@ import java.io.IOException;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.HttpProtocolParams;
 import org.xml.sax.SAXException;
 
 import android.app.AlertDialog;
@@ -13,6 +15,7 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -39,17 +42,25 @@ public class InboxList extends ListActivity {
 
 	private String errorMessage;
 
+	private DefaultHttpClient httpClient;
+
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		handler = new Handler();
-		if (Config.LOGV)
-			Log.v(TAG, "creating InboxList");
+		if (savedInstanceState == null) {
+			handler = new Handler();
+			if (Config.LOGV)
+				Log.v(TAG, "creating InboxList");
 
-		setContentView(R.layout.email_list);
+			httpClient = new DefaultHttpClient();
+			httpClient.getParams().setBooleanParameter(
+					HttpProtocolParams.USE_EXPECT_CONTINUE, false);
 
-		refresh();
+			setContentView(R.layout.email_list);
+
+			refresh();
+		}
 	}
 
 	private void refresh() {
@@ -107,7 +118,7 @@ public class InboxList extends ListActivity {
 								url, username, password);
 
 						ExchangeMessage[] inbox = getInboxContents
-								.getMessages();
+								.getMessages(httpClient);
 						if (Config.LOGV)
 							Log.v(TAG, "create list adapter");
 						adapter = new ExchangeMessageAdapter(InboxList.this,
@@ -173,6 +184,12 @@ public class InboxList extends ListActivity {
 			return true;
 		case R.id.settings:
 			startActivity(new Intent(this, SettingsActivity.class));
+			return true;
+		case R.id.help:
+			startActivity(new Intent(
+					Intent.ACTION_VIEW,
+					Uri
+							.parse("http://code.google.com/p/exchangeit/wiki/exchangeItHelp")));
 			return true;
 		}
 		return false;
