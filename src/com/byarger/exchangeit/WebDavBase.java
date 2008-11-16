@@ -8,6 +8,8 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 public class WebDavBase {
 
@@ -108,6 +110,18 @@ public class WebDavBase {
 			return "";
 		}
 		return fullUrl.substring(nextIdx);
+	}
+
+	protected static String getSingleValue(NodeList nl) {
+		if (nl != null && nl.getLength() > 0) {
+			Node item = nl.item(0);
+			if (item.getNodeType() == Node.ELEMENT_NODE) {
+				return getSingleValue(item.getChildNodes());
+			} else if (item.getNodeType() == Node.TEXT_NODE) {
+				return nl.item(0).getNodeValue();
+			}
+		}
+		return "";
 	}
 
 }

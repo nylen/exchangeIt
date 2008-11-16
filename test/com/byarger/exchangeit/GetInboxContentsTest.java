@@ -40,8 +40,8 @@ public class GetInboxContentsTest {
 	}
 
 	@Test
-	public void getContentsFormsBased() throws IOException, ParserConfigurationException,
-			SAXException {
+	public void getContentsFormsBased() throws IOException,
+			ParserConfigurationException, SAXException {
 		DefaultHttpClient httpClient = new DefaultHttpClient();
 		httpClient.getParams().setBooleanParameter(
 				HttpProtocolParams.USE_EXPECT_CONTINUE, false);
@@ -76,4 +76,17 @@ public class GetInboxContentsTest {
 		MimeMessage contents = msg.getMessageContents(httpClient);
 		assertNotNull("message is null", contents);
 	}
+
+	@Test
+	public void getUnreadMailCount() throws IOException,
+			ParserConfigurationException, SAXException {
+		DefaultHttpClient httpClient = new DefaultHttpClient();
+		httpClient.getParams().setBooleanParameter(
+				HttpProtocolParams.USE_EXPECT_CONTINUE, false);
+
+		InboxHasNewMail subject = new InboxHasNewMail(inbox, username, password);
+		Integer count = subject.getUnreadMailCount(httpClient);
+		assertNotNull("count is null", count);
+	}
+
 }

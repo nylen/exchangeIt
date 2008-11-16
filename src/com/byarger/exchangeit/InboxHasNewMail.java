@@ -2,13 +2,6 @@ package com.byarger.exchangeit;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -25,23 +18,21 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-public class GetInboxContents extends WebDavBase {
+public class InboxHasNewMail extends WebDavBase {
 
-	public GetInboxContents(String inboxURL, String username, String password) {
+	public InboxHasNewMail(String inboxURL, String username, String password) {
 		super(inboxURL, username, password);
 	}
 
-	public ExchangeMessage[] getMessages(DefaultHttpClient client)
+	public Integer getUnreadMailCount(DefaultHttpClient client)
 			throws IOException, ParserConfigurationException, SAXException {
-		SimpleDateFormat sdf = new SimpleDateFormat(
-				"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = factory.newDocumentBuilder();
 
-		MessageSearch request = new MessageSearch(getUrl());
+		NewMailSearch request = new NewMailSearch(getUrl());
 		request.setHeader("Depth", "0");
 
-		String content = request.generateRequestBody(getPathURI(getUrl()));
+		String content = request.generateRequestBody();
 		StringEntity entity = new StringEntity(content);
 		entity.setContentType("text/xml;");
 		request.setEntity(entity);
@@ -71,54 +62,20 @@ public class GetInboxContents extends WebDavBase {
 			list = multistatus.getChildNodes();
 		}
 
-		List<ExchangeMessage> emails = new ArrayList<ExchangeMessage>();
 		if (list != null) {
 			for (int i = 0; i < list.getLength(); i++) {
 				Element child = (Element) list.item(i);
 
-				String href = getSingleValue(child
-						.getElementsByTagName("a:href"));
-
-				String subject = getSingleValue(child
-						.getElementsByTagName("d:subject"));
-				String from = getSingleValue(child
-						.getElementsByTagName("e:fromname"));
-				String dt = getSingleValue(child.getElementsByTagName("d:date"));
-				String sz = getSingleValue(child
-						.getElementsByTagName("a:getcontentlength"));
-				Date date = null;
+				String countString = getSingleValue(child
+						.getElementsByTagName("d:unreadcount"));
 				try {
-					Date utcDate = sdf.parse(dt);
-					long utcMiliseconds = utcDate.getTime();
-					GregorianCalendar cal = new GregorianCalendar();
-					cal.setTimeInMillis(utcMiliseconds);
-					date = new Date(utcMiliseconds
-							+ cal.get(Calendar.ZONE_OFFSET)
-							+ cal.get(Calendar.DST_OFFSET));
-				} catch (ParseException e) {
-
-				}
-				String to = getSingleValue(child.getElementsByTagName("d:to"));
-				String read = getSingleValue(child
-						.getElementsByTagName("e:read"));
-				if (subject != null && subject.length() > 0) {
-					ExchangeMessage msg = new ExchangeMessage();
-					msg.setSubject(subject);
-					msg.setFrom(from);
-					if (date != null) {
-						msg.setSent(date);
-					}
-					msg.setTo(to);
-					msg.setRead(read.equals("1"));
-					msg.setHref(href);
-					if (sz != null && sz.length() > 0) {
-						msg.setSize(Long.valueOf(sz).longValue());
-					}
-
-					emails.add(msg);
+					Integer count = Integer.valueOf(countString);
+					return count;
+				} catch (NumberFormatException nfe) {
+					// nothing to do here
 				}
 			}
 		}
-		return emails.toArray(new ExchangeMessage[] {});
+		return null;
 	}
 }
