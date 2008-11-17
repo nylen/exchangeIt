@@ -19,9 +19,9 @@ import com.android.email.mail.internet.MimeMessage;
 
 public class GetInboxContentsTest {
 
-	private String username = "brian.yarger";
-	private String password = "abc123";
-	private String inbox = "https://mail.cedarcrestone.com/exchange/Brian.Yarger@cedarcrestone.com/Inbox";
+	private String username = "andriod@appriver.com";
+	private String password = "test";
+	private String inbox = "https://exg3.exghost.com/exchange/andriod@appriver.com/Inbox";
 
 	@Test
 	public void getContents() throws IOException, ParserConfigurationException,
@@ -32,23 +32,6 @@ public class GetInboxContentsTest {
 
 		GetInboxContents subject = new GetInboxContents(inbox, username,
 				password);
-		ExchangeMessage[] list = subject.getMessages(httpClient);
-		assertNotNull("list is null", list);
-		assertTrue("list is empty", list.length > 0);
-		assertNotNull("href is empty", list[0].getHref());
-		assertTrue("href is empty", list[0].getHref().length() > 0);
-	}
-
-	@Test
-	public void getContentsFormsBased() throws IOException,
-			ParserConfigurationException, SAXException {
-		DefaultHttpClient httpClient = new DefaultHttpClient();
-		httpClient.getParams().setBooleanParameter(
-				HttpProtocolParams.USE_EXPECT_CONTINUE, false);
-
-		GetInboxContents subject = new GetInboxContents(
-				"https://exg3.exghost.com/exchange/android@appriver.com/Inbox",
-				"android@appriver.com", "abc123");
 		ExchangeMessage[] list = subject.getMessages(httpClient);
 		assertNotNull("list is null", list);
 		assertTrue("list is empty", list.length > 0);

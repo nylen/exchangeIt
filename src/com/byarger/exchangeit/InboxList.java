@@ -39,6 +39,7 @@ public class InboxList extends ListActivity {
 	public static final String EXCHANGE_BASE_URL = "exchangeInboxUrl";
 	public static final String EXCHANGE_USERNAME = "exchangeUsername";
 	public static final String EXCHANGE_PASSWORD = "exchangePassword";
+	public static final String EXCHANGE_CHECK_INTERVAL = "exchangeCheckInterval";
 
 	private String errorMessage;
 
@@ -60,6 +61,12 @@ public class InboxList extends ListActivity {
 			setContentView(R.layout.email_list);
 
 			refresh();
+
+			Intent i = new Intent();
+			i.setClassName("com.byarger.exchangeit",
+					"com.byarger.exchangeit.NewMailService");
+			i.setAction(NewMailService.ACTION_RESCHEDULE);
+			startService(i);
 		}
 	}
 

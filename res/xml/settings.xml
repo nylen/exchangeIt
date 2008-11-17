@@ -11,5 +11,12 @@
 		<EditTextPreference android:key="exchangePassword"
 			android:title="Exchange Password" android:summary="Your OWA password"
 			android:password="true" android:dialogTitle="Enter your Password"></EditTextPreference>
+		<ListPreference
+                android:key="exchangeCheckInterval"
+                android:title="@string/title_list_preference"
+                android:summary="@string/summary_list_preference"
+                android:entries="@array/entries_list_preference"
+                android:entryValues="@array/entryvalues_list_preference"
+                android:dialogTitle="@string/dialog_title_list_preference" />			
 	</PreferenceCategory>
 </PreferenceScreen>

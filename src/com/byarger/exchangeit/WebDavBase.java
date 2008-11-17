@@ -1,13 +1,19 @@
 package com.byarger.exchangeit;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HTTP;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -63,11 +69,16 @@ public class WebDavBase {
 			IOException {
 		// get the base of the URL
 
-		HttpPost fbaAuth = new HttpPost(getBaseUrl(url)
-				+ "/exchweb/bin/auth/owaauth.dll");
-		fbaAuth.getParams().setParameter("destination", url);
-		fbaAuth.getParams().setParameter("username", username);
-		fbaAuth.getParams().setParameter("password", password);
+		HttpPost fbaAuth = new HttpPost(
+				getBaseUrl(url)
+						+ "/exchweb/bin/auth/owaauth.dll?ForcedBasic=false&amp;Basic=false&amp;Private=true&amp;Language=No_Value");
+		List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+		nvps.add(new BasicNameValuePair("destination", url));
+		nvps.add(new BasicNameValuePair("username", username));
+		nvps.add(new BasicNameValuePair("password", password));
+
+		fbaAuth.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
+		
 		HttpResponse response = client.execute(fbaAuth);
 
 		return response.getStatusLine().getStatusCode();
