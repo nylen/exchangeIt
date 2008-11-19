@@ -1,19 +1,3 @@
-/* 
- * Copyright (C) 2007 Google Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.byarger.exchangeit;
 
 import java.io.IOException;
@@ -53,6 +37,8 @@ public class NewMailService extends Service {
 
 	public static final String ACTION_RESCHEDULE = "com.byarger.exchangeit.RESCHEDULE";
 
+	public static final String ACTION_CHECK_FROM_NOTIFICATION = "com.byarger.exchangeit.NEW_MAIL_SERVICE_WAKEUP_NOTIFICATION";
+
 	private DefaultHttpClient httpClient;
 
 	@Override
@@ -72,6 +58,11 @@ public class NewMailService extends Service {
 				Log.v(TAG, "Running new mail process");
 			Thread notifyingThread = new Thread(null, mTask, "NewMailService");
 			notifyingThread.start();
+		} else if (intent.getAction().equals(ACTION_CHECK_FROM_NOTIFICATION)) {
+			if (Config.LOGV)
+				Log.v(TAG, "rescheduling");
+			cancelNotification();
+			reschedule();
 		} else if (intent.getAction().equals(ACTION_RESCHEDULE)) {
 			if (Config.LOGV)
 				Log.v(TAG, "rescheduling");
@@ -94,36 +85,43 @@ public class NewMailService extends Service {
 			String url = prefs.getString(InboxList.EXCHANGE_BASE_URL, "");
 			String username = prefs.getString(InboxList.EXCHANGE_USERNAME, "");
 			String password = prefs.getString(InboxList.EXCHANGE_PASSWORD, "");
+			String val = prefs
+					.getString(InboxList.EXCHANGE_CHECK_INTERVAL, "0");
 
-			InboxHasNewMail newMail = new InboxHasNewMail(url, username,
-					password);
-			Integer count = null;
-			try {
-				count = newMail.getUnreadMailCount(httpClient);
-			} catch (IOException e) {
-				if (Config.LOGV)
-					Log.v(TAG, "error getting unread mail count"
-							+ e.getMessage());
-			} catch (ParserConfigurationException e) {
-				if (Config.LOGV)
-					Log.v(TAG, "error getting unread mail count"
-							+ e.getMessage());
-			} catch (SAXException e) {
-				if (Config.LOGV)
-					Log.v(TAG, "error getting unread mail count"
-							+ e.getMessage());
-			} catch (RuntimeException e) {
-				if (Config.LOGV)
-					Log.v(TAG, "error getting unread mail count"
-							+ e.getMessage());
+			if (url != null && url.length() > 0 && username != null
+					&& username.length() > 0 && password != null
+					&& password.length() > 0 && val != null && val.length() > 0) {
+				InboxHasNewMail newMail = new InboxHasNewMail(url, username,
+						password);
+				Integer count = null;
+				try {
+					count = newMail.getUnreadMailCount(httpClient);
+				} catch (IOException e) {
+					if (Config.LOGV)
+						Log.v(TAG, "error getting unread mail count"
+								+ e.getMessage());
+				} catch (ParserConfigurationException e) {
+					if (Config.LOGV)
+						Log.v(TAG, "error getting unread mail count"
+								+ e.getMessage());
+				} catch (SAXException e) {
+					if (Config.LOGV)
+						Log.v(TAG, "error getting unread mail count"
+								+ e.getMessage());
+				} catch (RuntimeException e) {
+					if (Config.LOGV)
+						Log.v(TAG, "error getting unread mail count"
+								+ e.getMessage());
+				}
+
+				if (count != null && count > 0) {
+					showNotification(count);
+				} else {
+					cancelNotification();
+				}
+
+				NewMailService.this.reschedule();
 			}
-
-			if (count != null && count > 0) {
-				showNotification(count);
-			}
-
-			NewMailService.this.reschedule();
-
 			// Done with our work... stop the service!
 			NewMailService.this.stopSelf();
 		}
@@ -176,6 +174,11 @@ public class NewMailService extends Service {
 
 		// Send the notification.
 		mNM.notify(1, notification);
+	}
+
+	private void cancelNotification() {
+		// Send the notification.
+		mNM.cancelAll();
 	}
 
 }
