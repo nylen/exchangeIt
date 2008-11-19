@@ -11,6 +11,7 @@ import org.xml.sax.SAXException;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
+import android.app.NotificationManager;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -45,11 +46,14 @@ public class InboxList extends ListActivity {
 
 	private DefaultHttpClient httpClient;
 
+	private NotificationManager mNM;
+
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (savedInstanceState == null) {
+			mNM = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 			handler = new Handler();
 			if (Config.LOGV)
 				Log.v(TAG, "creating InboxList");
@@ -73,6 +77,9 @@ public class InboxList extends ListActivity {
 	private void refresh() {
 		if (Config.LOGV)
 			Log.v(TAG, "show progress dialog");
+
+		mNM.cancelAll();
+		
 		showDialog(DIALOG1_KEY);
 
 		final Runnable runInUIThread = new Runnable() {

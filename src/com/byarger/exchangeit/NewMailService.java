@@ -37,8 +37,6 @@ public class NewMailService extends Service {
 
 	public static final String ACTION_RESCHEDULE = "com.byarger.exchangeit.RESCHEDULE";
 
-	public static final String ACTION_CHECK_FROM_NOTIFICATION = "com.byarger.exchangeit.NEW_MAIL_SERVICE_WAKEUP_NOTIFICATION";
-
 	private DefaultHttpClient httpClient;
 
 	@Override
@@ -58,11 +56,6 @@ public class NewMailService extends Service {
 				Log.v(TAG, "Running new mail process");
 			Thread notifyingThread = new Thread(null, mTask, "NewMailService");
 			notifyingThread.start();
-		} else if (intent.getAction().equals(ACTION_CHECK_FROM_NOTIFICATION)) {
-			if (Config.LOGV)
-				Log.v(TAG, "rescheduling");
-			cancelNotification();
-			reschedule();
 		} else if (intent.getAction().equals(ACTION_RESCHEDULE)) {
 			if (Config.LOGV)
 				Log.v(TAG, "rescheduling");
@@ -162,7 +155,7 @@ public class NewMailService extends Service {
 	private void showNotification(int count) {
 		Notification notification = new Notification(R.drawable.send_16, null,
 				System.currentTimeMillis());
-
+		notification.number = count;
 		// The PendingIntent to launch our activity if the user selects this
 		// notification
 		PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
@@ -177,7 +170,7 @@ public class NewMailService extends Service {
 	}
 
 	private void cancelNotification() {
-		// Send the notification.
+		// cancel any notifications.
 		mNM.cancelAll();
 	}
 
