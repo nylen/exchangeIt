@@ -10,9 +10,6 @@ import java.io.OutputStream;
 
 import org.apache.commons.io.IOUtils;
 
-import android.util.Config;
-import android.util.Log;
-
 import com.android.email.codec.binary.Base64OutputStream;
 import com.android.email.mail.Body;
 import com.android.email.mail.MessagingException;

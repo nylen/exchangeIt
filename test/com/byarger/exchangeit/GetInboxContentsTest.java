@@ -8,8 +8,12 @@ import java.io.IOException;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.HttpProtocolParams;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 
@@ -26,9 +30,7 @@ public class GetInboxContentsTest {
 	@Test
 	public void getContents() throws IOException, ParserConfigurationException,
 			SAXException {
-		DefaultHttpClient httpClient = new DefaultHttpClient();
-		httpClient.getParams().setBooleanParameter(
-				HttpProtocolParams.USE_EXPECT_CONTINUE, false);
+		DefaultHttpClient httpClient = WebDavBase.createHttpClient();
 
 		GetInboxContents subject = new GetInboxContents(inbox, username,
 				password);
@@ -42,9 +44,7 @@ public class GetInboxContentsTest {
 	@Test
 	public void getMessage() throws IOException, ParserConfigurationException,
 			SAXException, MessagingException {
-		DefaultHttpClient httpClient = new DefaultHttpClient();
-		httpClient.getParams().setBooleanParameter(
-				HttpProtocolParams.USE_EXPECT_CONTINUE, false);
+		DefaultHttpClient httpClient = WebDavBase.createHttpClient();
 		BinaryTempFileBody.setTempDirectory(new File(System
 				.getProperty("java.io.tmpdir")));
 		GetInboxContents subject = new GetInboxContents(inbox, username,
@@ -63,13 +63,36 @@ public class GetInboxContentsTest {
 	@Test
 	public void getUnreadMailCount() throws IOException,
 			ParserConfigurationException, SAXException {
-		DefaultHttpClient httpClient = new DefaultHttpClient();
-		httpClient.getParams().setBooleanParameter(
-				HttpProtocolParams.USE_EXPECT_CONTINUE, false);
+		DefaultHttpClient httpClient = WebDavBase.createHttpClient();
 
 		InboxHasNewMail subject = new InboxHasNewMail(inbox, username, password);
 		Integer count = subject.getUnreadMailCount(httpClient);
 		assertNotNull("count is null", count);
 	}
 
+	@Test
+	public void selfSignedCertTest() throws Exception {
+		DefaultHttpClient httpClient = WebDavBase.createHttpClient();
+
+		httpClient.getCredentialsProvider().setCredentials(AuthScope.ANY,
+				new UsernamePasswordCredentials("byarger", ""));
+
+		HttpGet httpget = new HttpGet("https://svn.e2econsulting.com/");
+
+		System.out.println("executing request" + httpget.getRequestLine());
+
+		HttpResponse response = httpClient.execute(httpget);
+		HttpEntity entity = response.getEntity();
+
+		System.out.println("----------------------------------------");
+		System.out.println(response.getStatusLine());
+		if (entity != null) {
+			System.out.println("Response content length: "
+					+ entity.getContentLength());
+		}
+		if (entity != null) {
+			entity.consumeContent();
+		}
+
+	}
 }

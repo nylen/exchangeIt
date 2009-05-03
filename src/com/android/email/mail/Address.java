@@ -4,8 +4,6 @@ package com.android.email.mail;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.james.mime4j.field.address.AddressList;
 import org.apache.james.mime4j.field.address.Mailbox;
@@ -13,11 +11,9 @@ import org.apache.james.mime4j.field.address.MailboxList;
 import org.apache.james.mime4j.field.address.NamedMailbox;
 import org.apache.james.mime4j.field.address.parser.ParseException;
 
-import android.util.Config;
 import android.util.Log;
 
 import com.android.email.Utility;
-import com.android.email.mail.internet.MimeUtility;
 
 public class Address {
     String mAddress;

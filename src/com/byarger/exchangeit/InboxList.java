@@ -5,7 +5,6 @@ import java.io.IOException;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.HttpProtocolParams;
 import org.xml.sax.SAXException;
 
 import android.app.AlertDialog;
@@ -58,14 +57,24 @@ public class InboxList extends ListActivity {
 			if (Config.LOGV)
 				Log.v(TAG, "creating InboxList");
 
-			httpClient = new DefaultHttpClient();
-			httpClient.getParams().setBooleanParameter(
-					HttpProtocolParams.USE_EXPECT_CONTINUE, false);
+			httpClient = WebDavBase.createHttpClient();
 
 			setContentView(R.layout.email_list);
 
-			refresh();
+			SharedPreferences prefs = PreferenceManager
+					.getDefaultSharedPreferences(InboxList.this);
 
+			String url = prefs.getString(EXCHANGE_BASE_URL, "");
+			String username = prefs.getString(EXCHANGE_USERNAME, "");
+			String password = prefs.getString(EXCHANGE_PASSWORD, "");
+
+			if (url.length() > 0 && username.length() > 0
+					&& password.length() > 0) {
+
+				refresh();
+			} else {
+				startActivity(new Intent(this, SettingsActivity.class));
+			}
 			Intent i = new Intent();
 			i.setClassName("com.byarger.exchangeit",
 					"com.byarger.exchangeit.NewMailService");
@@ -79,7 +88,7 @@ public class InboxList extends ListActivity {
 			Log.v(TAG, "show progress dialog");
 
 		mNM.cancelAll();
-		
+
 		showDialog(DIALOG1_KEY);
 
 		final Runnable runInUIThread = new Runnable() {

@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.text.DateFormat;
 
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.HttpProtocolParams;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -67,9 +66,7 @@ public class MessageView extends Activity {
 			Log.v(TAG, "creating message view");
 		setContentView(R.layout.message_view);
 
-		httpClient = new DefaultHttpClient();
-		httpClient.getParams().setBooleanParameter(
-				HttpProtocolParams.USE_EXPECT_CONTINUE, false);
+		httpClient = WebDavBase.createHttpClient();
 
 		mMessageContentView = (WebView) findViewById(R.id.message_content);
 		mMessageContentView.setVerticalScrollBarEnabled(false);

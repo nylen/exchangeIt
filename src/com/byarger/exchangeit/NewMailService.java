@@ -5,7 +5,6 @@ import java.io.IOException;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.HttpProtocolParams;
 import org.xml.sax.SAXException;
 
 import android.app.AlarmManager;
@@ -42,10 +41,7 @@ public class NewMailService extends Service {
 	@Override
 	public void onCreate() {
 		mNM = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-
-		httpClient = new DefaultHttpClient();
-		httpClient.getParams().setBooleanParameter(
-				HttpProtocolParams.USE_EXPECT_CONTINUE, false);
+		httpClient = WebDavBase.createHttpClient();
 	}
 
 	@Override

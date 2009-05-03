@@ -7,10 +7,10 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 
-import com.android.email.codec.binary.Base64;
-
 import android.text.Editable;
 import android.widget.TextView;
+
+import com.android.email.codec.binary.Base64;
 
 public class Utility {
     public final static String readInputStream(InputStream in, String encoding) throws IOException {
