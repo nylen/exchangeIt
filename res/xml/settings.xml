@@ -17,6 +17,10 @@
                 android:summary="@string/summary_list_preference"
                 android:entries="@array/entries_list_preference"
                 android:entryValues="@array/entryvalues_list_preference"
-                android:dialogTitle="@string/dialog_title_list_preference" />			
+                android:dialogTitle="@string/dialog_title_list_preference" />
+        <CheckBoxPreference
+        		android:key="exchangeMarkAsRead"
+        		android:title="@string/title_mark_as_read_preference"
+        		android:summary="@string/summary_mark_as_read_preference"/>			
 	</PreferenceCategory>
 </PreferenceScreen>

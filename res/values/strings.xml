@@ -17,4 +17,6 @@
 	<string name="title_list_preference">Check for new mail frequency</string>
 	<string name="summary_list_preference">Check for new mail frequency</string>
 	<string name="dialog_title_list_preference">Check for new mail frequency</string>
+<string name="title_mark_as_read_preference">Mark Emails Read on Server</string>
+<string name="summary_mark_as_read_preference">Mark emails as read on server</string>
 </resources>

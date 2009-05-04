@@ -23,9 +23,9 @@ import com.android.email.mail.internet.MimeMessage;
 
 public class GetInboxContentsTest {
 
-	private String username = "andriod@appriver.com";
-	private String password = "test";
-	private String inbox = "https://exg3.exghost.com/exchange/andriod@appriver.com/Inbox";
+	private String username = "brian.yarger";
+	private String password = "";
+	private String inbox = "https://mail.cedarcrestone.com/exchange/Brian.Yarger@cedarcrestone.com/Inbox";
 
 	@Test
 	public void getContents() throws IOException, ParserConfigurationException,

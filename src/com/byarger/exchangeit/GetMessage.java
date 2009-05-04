@@ -47,6 +47,7 @@ public class GetMessage extends WebDavBase {
 		if (response.getStatusLine().getStatusCode() >= 300) {
 			return null;
 		}
+		
 		MimeMessage msg = new MimeMessage(response.getEntity().getContent());
 		return msg;
 	}

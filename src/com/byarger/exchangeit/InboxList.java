@@ -40,6 +40,7 @@ public class InboxList extends ListActivity {
 	public static final String EXCHANGE_USERNAME = "exchangeUsername";
 	public static final String EXCHANGE_PASSWORD = "exchangePassword";
 	public static final String EXCHANGE_CHECK_INTERVAL = "exchangeCheckInterval";
+	public static final String EXCHANGE_MARK_AS_READ = "exchangeMarkAsRead";
 
 	private String errorMessage;
 
@@ -192,11 +193,12 @@ public class InboxList extends ListActivity {
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 
 		final String href = adapter.getItem(position).getHref();
+		final boolean read = adapter.getItem(position).isRead();
 		Intent intent = new Intent(this,
 				com.byarger.exchangeit.MessageView.class);
 		intent.putExtra("com.byarger.exchangeit.href", href);
+		intent.putExtra("com.byarger.exchangeit.read", read);
 		startActivity(intent);
-
 	}
 
 	@Override

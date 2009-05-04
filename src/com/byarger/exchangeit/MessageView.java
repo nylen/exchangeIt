@@ -3,7 +3,10 @@ package com.byarger.exchangeit;
 import java.io.IOException;
 import java.text.DateFormat;
 
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.xml.sax.SAXException;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -61,6 +64,7 @@ public class MessageView extends Activity {
 
 		Bundle extras = getIntent().getExtras();
 		final String href = extras.getString("com.byarger.exchangeit.href");
+		final boolean read = extras.getBoolean("com.byarger.exchangeit.read");
 
 		if (Config.LOGV)
 			Log.v(TAG, "creating message view");
@@ -132,6 +136,21 @@ public class MessageView extends Activity {
 
 					message = getMessage.getMessageContents(httpClient);
 
+					if (prefs.getBoolean(InboxList.EXCHANGE_MARK_AS_READ, true)
+							&& !read) {
+						try {
+							MarkMessageRead mmr = new MarkMessageRead(href,
+									username, password);
+							mmr.markRead(httpClient, href, true);
+						} catch (ParserConfigurationException e) {
+							errorMessage = "Caught unhandled ParserConfigurationException: "
+									+ e.getMessage();
+							if (Config.LOGV)
+								Log.e(TAG, errorMessage);
+
+						}
+					}
+
 				} catch (IOException e) {
 					errorMessage = "Caught IO Exception: " + e.getMessage();
 					handler.post(showAlertDialog);
@@ -143,6 +162,9 @@ public class MessageView extends Activity {
 					errorMessage = "Caught unhandled RuntimeException: "
 							+ e.getMessage();
 					handler.post(showAlertDialog);
+				} catch (SAXException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 
 				if (Config.LOGV)
