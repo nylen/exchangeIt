@@ -74,9 +74,6 @@ public class GetInboxContentsTest {
 	public void selfSignedCertTest() throws Exception {
 		DefaultHttpClient httpClient = WebDavBase.createHttpClient();
 
-		httpClient.getCredentialsProvider().setCredentials(AuthScope.ANY,
-				new UsernamePasswordCredentials("byarger", ""));
-
 		HttpGet httpget = new HttpGet("https://svn.e2econsulting.com/");
 
 		System.out.println("executing request" + httpget.getRequestLine());
