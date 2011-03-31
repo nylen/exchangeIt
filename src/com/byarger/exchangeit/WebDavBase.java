@@ -137,9 +137,13 @@ public class WebDavBase {
 
 		HttpPost fbaAuth = new HttpPost(getBaseUrl(url)
 				+ "/owa/auth/owaauth.dll");
-		fbaAuth.getParams().setParameter("destination", url);
-		fbaAuth.getParams().setParameter("username", username);
-		fbaAuth.getParams().setParameter("password", password);
+        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+        nvps.add(new BasicNameValuePair("destination", url));
+        nvps.add(new BasicNameValuePair("username", username));
+        nvps.add(new BasicNameValuePair("password", password));
+
+        fbaAuth.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
+
 		HttpResponse response = client.execute(fbaAuth);
 
 		return response.getStatusLine().getStatusCode();
