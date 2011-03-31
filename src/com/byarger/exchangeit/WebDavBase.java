@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.http.HttpException;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
@@ -25,6 +28,7 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
+import org.apache.http.protocol.HttpContext;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -71,7 +75,16 @@ public class WebDavBase {
 		ClientConnectionManager cm = new ThreadSafeClientConnManager(params,
 				schemeRegistry);
 
-		return new DefaultHttpClient(cm, params);
+        DefaultHttpClient client = new DefaultHttpClient(cm, params);
+
+        client.addRequestInterceptor(new HttpRequestInterceptor() {
+            public void process(HttpRequest request, HttpContext context)
+                    throws HttpException, IOException {
+                request.addHeader("User-Agent", "Mozilla/5.0");
+            }
+        });
+
+        return client;
 	}
 
 	protected static boolean authenticate(DefaultHttpClient client, String url,
