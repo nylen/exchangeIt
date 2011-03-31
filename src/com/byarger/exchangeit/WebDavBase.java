@@ -13,7 +13,6 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.params.ConnManagerPNames;
@@ -37,6 +36,8 @@ public class WebDavBase {
 	private String url;
 	private String username;
 	private String password;
+
+    private static boolean isExchange2007 = false;
 
 	public WebDavBase(String url, String username, String password) {
 		this.url = url;
@@ -90,24 +91,23 @@ public class WebDavBase {
 	protected static boolean authenticate(DefaultHttpClient client, String url,
 			String username, String password) throws ClientProtocolException,
 			IOException {
-		HttpGet get = new HttpGet(url);
+		
+        client.getCookieStore().clear();
+        
+        if (isExchange2007) {
+            int code = formsBasedAuth2007(client, url, username, password);
+            return (code < 300);
+		} else {
+            // auth problem, lets try forms based auth
+            int code = formsBasedAuth2003(client, url, username, password);
 
-		// auth problem, lets try forms based auth
-		formsBasedAuth2003(client, url, username, password);
-
-		// redo the request, see if the cookies work
-		HttpResponse response = client.execute(get);
-
-		int code = response.getStatusLine().getStatusCode();
-
-		if (code == 401) {
-			formsBasedAuth2007(client, url, username, password);
-
-			// redo the request, see if the cookies work
-			response = client.execute(get);
-			code = response.getStatusLine().getStatusCode();
-		}
-		return code < 300;
+            if (code == 401 || code == 440) {
+                isExchange2007 = true;
+                return authenticate(client, url, username, password);
+            } else {
+                return (code < 300);
+            }
+        }
 	}
 
 	private static int formsBasedAuth2003(HttpClient client, String url,
